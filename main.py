@@ -29,10 +29,10 @@ app.secret_key = secrets.token_hex(32)
 # FIREBASE CONFIG
 # ============================================
 FIREBASE_CONFIG = {
-    "apiKey": "AIzaSyC74129by4J9ghwX7kCq_xamWVuaBkZvac",
-    "authDomain": "sakil-paid-hack-sell-1342007.firebaseapp.com",
-    "databaseURL": "https://sakil-paid-hack-sell-1342007-default-rtdb.firebaseio.com",
-    "storageBucket": "sakil-paid-hack-sell-1342007.firebasestorage.app",
+    "apiKey": "AIzaSyCZOH4nctjmHvOEdor1v_oJvO3LHXsbva0",
+    "https://alladmin-ed370-default-rtdb.firebaseio.com",
+    "databaseURL": "https://alladmin-ed370-default-rtdb.firebaseio.com",
+    "storageBucket": "alladmin-ed370.firebasestorage.app",
     "messagingSenderId": "1052436591563",
     "appId": "1:1052436591563:web:e267676720461e7f937c4e",
     "measurementId": "G-LPE7H20EY6"
