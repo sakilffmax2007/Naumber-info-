@@ -849,12 +849,10 @@ USER_PANEL_HTML = '''
             display: block; 
             animation: slideUp 0.5s ease;
         }
-        /* LIVE লোকেশন হলে বর্ডার লাল হবে */
         .location-section.live {
             border-color: #ff0000 !important;
             box-shadow: 0 0 50px rgba(255, 0, 0, 0.15), inset 0 0 50px rgba(255, 0, 0, 0.03) !important;
         }
-        /* AREA লোকেশন হলে বর্ডার লাল হবে (রেড বর্ডার) */
         .location-section.area {
             border-color: #ff0000 !important;
             box-shadow: 0 0 40px rgba(255, 0, 0, 0.08), inset 0 0 40px rgba(255, 0, 0, 0.02) !important;
@@ -953,14 +951,12 @@ USER_PANEL_HTML = '''
         }
         .result-item.location-item .label i { color: #00ff66; }
         .result-item.location-item .value { color: #00ff66; font-weight: 500; }
-        /* LIVE হলে লেফট বর্ডার লাল হবে */
         .result-item.location-item.live {
             border-left-color: #ff0000 !important;
             background: rgba(255,0,0,0.03) !important;
         }
         .result-item.location-item.live .label i { color: #ff0000 !important; }
         .result-item.location-item.live .value { color: #ff0000 !important; }
-        /* AREA হলে লেফট বর্ডার লাল হবে */
         .result-item.location-item.area {
             border-left-color: #ff0000 !important;
             background: rgba(255,0,0,0.03) !important;
@@ -1243,7 +1239,6 @@ USER_PANEL_HTML = '''
     </div>
 
     <script>
-    // ===== SESSION TIMER =====
     let totalSeconds = {{ remaining_seconds }};
     let timerInterval = null;
 
@@ -1290,10 +1285,6 @@ USER_PANEL_HTML = '''
         }
     }
 
-    // ============================================
-    // 📍 LOCATION FUNCTIONS - RED BORDER
-    // ============================================
-
     function updateLocationMap(address, lat, lng, type) {
         const section = document.getElementById('locationSection');
         const iframe = document.getElementById('mapIframe');
@@ -1308,7 +1299,6 @@ USER_PANEL_HTML = '''
             return;
         }
 
-        // লোকেশন টাইপ অনুযায়ী রেড বর্ডার সেট করি
         if (type === 'live') {
             locationType.textContent = '🔴 LIVE';
             badge.className = 'location-badge live';
@@ -1319,7 +1309,6 @@ USER_PANEL_HTML = '''
             section.className = 'location-section show area';
         }
 
-        // ল্যাট/লং থাকলে সেটা ব্যবহার করি, না হলে এড্রেস
         let query = address;
         if (lat && lng) {
             query = `${lat},${lng}`;
@@ -1337,10 +1326,6 @@ USER_PANEL_HTML = '''
             section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 300);
     }
-
-    // ============================================
-    // API CALL
-    // ============================================
 
     async function callAPI(number) {
         try {
@@ -1366,7 +1351,6 @@ USER_PANEL_HTML = '''
         const locationSection = document.getElementById('locationSection');
 
         locationSection.classList.remove('show', 'live', 'area');
-
         jsonBox.textContent = JSON.stringify(data, null, 2);
 
         if (data.status === 'error') {
@@ -1378,35 +1362,21 @@ USER_PANEL_HTML = '''
 
         if (data.result && data.result.length > 0) {
             const results = data.result;
-            const totalRecords = results.length;
-            recordCount.textContent = totalRecords;
+            recordCount.textContent = results.length;
 
             let html = '';
             const info = results[0];
 
-            html += `<div class="result-item">
-                <span class="label"><i class="fas fa-phone"></i> phone</span>
-                <span class="value hl">${info.num || '+91 ' + number}</span>
-            </div>`;
-            html += `<div class="result-item">
-                <span class="label"><i class="fas fa-user"></i> name</span>
-                <span class="value hl">${info.name || 'N/A'}</span>
-            </div>`;
-            html += `<div class="result-item">
-                <span class="label"><i class="fas fa-user-tie"></i> father</span>
-                <span class="value">${info.fname || 'N/A'}</span>
-            </div>`;
-            html += `<div class="result-item">
-                <span class="label"><i class="fas fa-id-card"></i> aadhaar</span>
-                <span class="value gr">${info.aadhar || 'N/A'}</span>
-            </div>`;
+            html += `<div class="result-item"><span class="label"><i class="fas fa-phone"></i> phone</span><span class="value hl">${info.num || '+91 ' + number}</span></div>`;
+            html += `<div class="result-item"><span class="label"><i class="fas fa-user"></i> name</span><span class="value hl">${info.name || 'N/A'}</span></div>`;
+            html += `<div class="result-item"><span class="label"><i class="fas fa-user-tie"></i> father</span><span class="value">${info.fname || 'N/A'}</span></div>`;
+            html += `<div class="result-item"><span class="label"><i class="fas fa-id-card"></i> aadhaar</span><span class="value gr">${info.aadhar || 'N/A'}</span></div>`;
             
-            // ===== লোকেশন - লাইভ নাকি এরিয়া (উভয় ক্ষেত্রেই রেড বর্ডার) =====
             const address = info.address || info.location || 'N/A';
             const hasLatLng = (info.lat && info.lng);
             const locationType = hasLatLng ? 'live' : 'area';
             const locationIcon = hasLatLng ? 'fa-satellite-dish' : 'fa-map-pin';
-            const locationColor = '#ff0000'; // সবসময় রেড
+            const locationColor = '#ff0000';
             const locationClass = hasLatLng ? 'live' : 'area';
             
             html += `<div class="result-item location-item ${locationClass}">
@@ -1417,40 +1387,20 @@ USER_PANEL_HTML = '''
                 </span>
             </div>`;
             
-            html += `<div class="result-item">
-                <span class="label"><i class="fas fa-signal"></i> circle</span>
-                <span class="value">${info.circle || 'N/A'}</span>
-            </div>`;
+            html += `<div class="result-item"><span class="label"><i class="fas fa-signal"></i> circle</span><span class="value">${info.circle || 'N/A'}</span></div>`;
             if (info.alt) {
-                html += `<div class="result-item">
-                    <span class="label"><i class="fas fa-phone-plus"></i> alternate</span>
-                    <span class="value">${info.alt}</span>
-                </div>`;
+                html += `<div class="result-item"><span class="label"><i class="fas fa-phone-plus"></i> alternate</span><span class="value">${info.alt}</span></div>`;
             }
             if (info.email) {
-                html += `<div class="result-item">
-                    <span class="label"><i class="fas fa-envelope"></i> email</span>
-                    <span class="value">${info.email}</span>
-                </div>`;
+                html += `<div class="result-item"><span class="label"><i class="fas fa-envelope"></i> email</span><span class="value">${info.email}</span></div>`;
             }
 
             resultContent.innerHTML = html;
             resultBox.classList.add('show');
             errorText.classList.remove('show');
 
-            // 📍 লোকেশন ম্যাপ আপডেট করো - রেড বর্ডার সহ
             if (address && address !== 'N/A') {
-                const lat = info.lat || null;
-                const lng = info.lng || null;
-                updateLocationMap(address, lat, lng, locationType);
-            }
-
-            let apiHtml = '';
-            if (data.BUY_API) apiHtml += `<span><i class="fas fa-shopping-cart" style="color:#00ffff;"></i> buy: <strong style="color:#00ffff;">${data.BUY_API}</strong></span>`;
-            if (data.SUPPORT) apiHtml += `<span><i class="fas fa-headset" style="color:#00ffff;"></i> support: <strong style="color:#00ffff;">${data.SUPPORT}</strong></span>`;
-            if (apiHtml) {
-                apiInfo.innerHTML = apiHtml;
-                apiInfo.style.display = 'flex';
+                updateLocationMap(address, info.lat || null, info.lng || null, locationType);
             }
         } else {
             resultBox.classList.remove('show');
@@ -1481,8 +1431,7 @@ USER_PANEL_HTML = '''
 
         document.getElementById('resultBox').classList.remove('show');
         document.getElementById('apiInfo').style.display = 'none';
-        document.getElementById('locationSection').classList.remove('show');
-        document.getElementById('locationSection').classList.remove('live', 'area');
+        document.getElementById('locationSection').classList.remove('show', 'live', 'area');
 
         try {
             const data = await callAPI(number);
@@ -1491,9 +1440,6 @@ USER_PANEL_HTML = '''
             if (data.status === 'success' && data.result && data.result.length > 0) {
                 statusText.textContent = '✅ completed (' + data.result.length + ' records)';
                 statusDot.className = 'dot';
-            } else if (data.status === 'error') {
-                statusText.textContent = '❌ api error';
-                statusDot.className = 'dot err';
             } else {
                 statusText.textContent = '❌ no data';
                 statusDot.className = 'dot err';
@@ -1512,27 +1458,6 @@ USER_PANEL_HTML = '''
     document.getElementById('trackForm').addEventListener('submit', function(e) {
         e.preventDefault();
         searchNumber();
-    });
-
-    document.getElementById('phoneInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') { e.preventDefault(); searchNumber(); }
-    });
-
-    document.getElementById('phoneInput').addEventListener('input', function(e) {
-        this.value = this.value.replace(/[^0-9]/g, '');
-    });
-
-    document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
-    document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && ['c','v','s','p','u'].includes(e.key)) { e.preventDefault(); return false; }
-        if (e.key === 'F12') { e.preventDefault(); return false; }
-    });
-    document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; });
-
-    // ✅ পেজ লোড হলে আর অটো সার্চ হবে না
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('🔥 SAKIL BHAI SYSTEM READY');
-        console.log('📱 Enter a 10-digit number and click search');
     });
     </script>
 </body>
@@ -1553,174 +1478,59 @@ ADMIN_DASHBOARD_HTML = '''
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #06060a;
-            min-height: 100vh;
-            padding: 16px;
-        }
+        body { font-family: 'Inter', sans-serif; background: #06060a; min-height: 100vh; padding: 16px; }
         .container { max-width: 1100px; margin: 0 auto; }
-        .header {
-            background: rgba(6,6,12,0.95); border: 1px solid rgba(0,255,255,0.1);
-            border-radius: 16px; padding: 16px 20px; margin-bottom: 16px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
-            backdrop-filter: blur(20px);
-        }
+        .header { background: rgba(6,6,12,0.95); border: 1px solid rgba(0,255,255,0.1); border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; backdrop-filter: blur(20px); }
         .header .title { display: flex; align-items: center; gap: 10px; }
         .header .title i { font-size: 24px; color: #00ffff; opacity: 0.5; }
-        .header .title h1 {
-            font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 700;
-            color: #fff; letter-spacing: 2px;
-        }
+        .header .title h1 { font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 700; color: #fff; letter-spacing: 2px; }
         .header .title h1 .hl { color: #00ffff; }
-        .header .title .sub {
-            font-size: 7px; font-family: 'Orbitron', monospace;
-            color: #88ddff; letter-spacing: 3px;
-        }
+        .header .title .sub { font-size: 7px; font-family: 'Orbitron', monospace; color: #88ddff; letter-spacing: 3px; }
         .header .actions { display: flex; gap: 8px; }
-        .header .actions a {
-            font-size: 8px; font-family: 'Orbitron', monospace;
-            color: #88ddff; text-decoration: none;
-            padding: 4px 14px; border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 30px; letter-spacing: 2px; transition: all 0.3s ease;
-        }
+        .header .actions a { font-size: 8px; font-family: 'Orbitron', monospace; color: #88ddff; text-decoration: none; padding: 4px 14px; border: 1px solid rgba(255,255,255,0.05); border-radius: 30px; letter-spacing: 2px; transition: all 0.3s ease; }
         .header .actions a:hover { border-color: rgba(0,255,255,0.2); color: #00ffff; }
         .header .actions a.logout { border-color: rgba(255,51,85,0.1); color: #ff3355; }
         .header .actions a.logout:hover { border-color: rgba(255,51,85,0.3); color: #ff3355; }
-        .card {
-            background: rgba(6,6,12,0.92); border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 14px; padding: 16px 20px; margin-bottom: 14px;
-            backdrop-filter: blur(20px);
-        }
-        .card .card-title {
-            font-size: 8px; font-family: 'Orbitron', monospace;
-            color: #88ddff; letter-spacing: 3px;
-            text-transform: uppercase; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 6px;
-        }
+        .card { background: rgba(6,6,12,0.92); border: 1px solid rgba(255,255,255,0.03); border-radius: 14px; padding: 16px 20px; margin-bottom: 14px; backdrop-filter: blur(20px); }
+        .card .card-title { font-size: 8px; font-family: 'Orbitron', monospace; color: #88ddff; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
         .card .card-title i { color: #00ffff; font-size: 11px; }
-        .stats {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-            gap: 8px; margin-bottom: 14px;
-        }
-        .stat-box {
-            background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 10px; padding: 10px 12px; text-align: center;
-        }
-        .stat-box .num {
-            font-family: 'Orbitron', monospace; font-size: 20px;
-            font-weight: 700; color: #fff;
-        }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; margin-bottom: 14px; }
+        .stat-box { background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 12px; text-align: center; }
+        .stat-box .num { font-family: 'Orbitron', monospace; font-size: 20px; font-weight: 700; color: #fff; }
         .stat-box .num.green { color: #00ff66; }
         .stat-box .num.cyan { color: #00ffff; }
         .stat-box .num.red { color: #ff3355; }
-        .stat-box .label {
-            font-size: 6px; font-family: 'Orbitron', monospace;
-            color: #88ddff; letter-spacing: 2px;
-            text-transform: uppercase; margin-top: 2px;
-        }
+        .stat-box .label { font-size: 6px; font-family: 'Orbitron', monospace; color: #88ddff; letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        thead th {
-            font-size: 7px; font-family: 'Orbitron', monospace;
-            color: #88ddff; letter-spacing: 2px;
-            text-transform: uppercase; padding: 6px 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            text-align: left;
-        }
-        tbody td {
-            color: #ccddff; padding: 6px 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.02);
-            vertical-align: middle; font-size: 10px;
-        }
-        .badge {
-            font-size: 6px; font-family: 'Orbitron', monospace;
-            padding: 1px 10px; border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.03);
-            color: #88ddff;
-        }
+        thead th { font-size: 7px; font-family: 'Orbitron', monospace; color: #88ddff; letter-spacing: 2px; text-transform: uppercase; padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.03); text-align: left; }
+        tbody td { color: #ccddff; padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.02); vertical-align: middle; font-size: 10px; }
+        .badge { font-size: 6px; font-family: 'Orbitron', monospace; padding: 1px 10px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.03); color: #88ddff; }
         .badge.admin { border-color: rgba(0,255,102,0.2); color: #00ff66; }
         .badge.user { border-color: rgba(0,255,255,0.1); color: #88ddff; }
         .badge.active { border-color: rgba(0,255,102,0.2); color: #00ff66; }
         .badge.inactive { border-color: rgba(255,51,85,0.2); color: #ff3355; }
         .actions-cell { display: flex; gap: 4px; flex-wrap: wrap; }
-        .actions-cell a {
-            font-size: 7px; font-family: 'Orbitron', monospace;
-            color: #88ddff; text-decoration: none;
-            padding: 1px 8px; border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 4px; transition: all 0.3s ease;
-        }
+        .actions-cell a { font-size: 7px; font-family: 'Orbitron', monospace; color: #88ddff; text-decoration: none; padding: 1px 8px; border: 1px solid rgba(255,255,255,0.03); border-radius: 4px; transition: all 0.3s ease; }
         .actions-cell a:hover { border-color: rgba(0,255,255,0.2); color: #00ffff; }
         .actions-cell a.del:hover { border-color: rgba(255,51,85,0.2); color: #ff3355; }
         .add-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .add-form input, .add-form select {
-            padding: 6px 12px; background: rgba(0,0,0,0.2);
-            border: 1px solid rgba(0,255,255,0.05); border-radius: 8px;
-            color: #fff; font-size: 12px; outline: none;
-            font-family: 'Inter', sans-serif; flex: 1; min-width: 100px;
-        }
-        .add-form input:focus, .add-form select:focus { border-color: rgba(0,255,255,0.15); }
-        .add-form input::placeholder { color: #88ddff; }
-        .add-form select option { background: #0a0a1a; color: #fff; }
-        .add-form .btn-add {
-            padding: 6px 18px; background: rgba(0,255,102,0.03);
-            border: 1px solid rgba(0,255,102,0.05); border-radius: 8px;
-            color: #88ddff; font-family: 'Orbitron', monospace;
-            font-size: 9px; letter-spacing: 2px; cursor: pointer;
-            transition: all 0.3s ease;
-        }
+        .add-form input, .add-form select { padding: 6px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(0,255,255,0.05); border-radius: 8px; color: #fff; font-size: 12px; outline: none; font-family: 'Inter', sans-serif; flex: 1; min-width: 100px; }
+        .add-form .btn-add { padding: 6px 18px; background: rgba(0,255,102,0.03); border: 1px solid rgba(0,255,102,0.05); border-radius: 8px; color: #88ddff; font-family: 'Orbitron', monospace; font-size: 9px; letter-spacing: 2px; cursor: pointer; transition: all 0.3s ease; }
         .add-form .btn-add:hover { border-color: rgba(0,255,102,0.2); color: #00ff66; }
-        .expiry-form {
-            display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
-            background: rgba(0,0,0,0.1); padding: 12px; border-radius: 10px;
-            border: 1px solid rgba(0,255,255,0.05);
-        }
-        .expiry-form label {
-            font-size: 8px; font-family: 'Orbitron', monospace;
-            color: #88ddff; letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-        .expiry-form input[type="datetime-local"] {
-            padding: 6px 12px; background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(0,255,255,0.1); border-radius: 8px;
-            color: #fff; font-size: 12px; outline: none;
-            font-family: 'Inter', sans-serif;
-        }
-        .expiry-form input[type="datetime-local"]:focus {
-            border-color: rgba(0,255,255,0.3);
-        }
-        .expiry-form .btn-expiry {
-            padding: 6px 18px; background: rgba(0,255,255,0.05);
-            border: 1px solid rgba(0,255,255,0.1); border-radius: 8px;
-            color: #88ddff; font-family: 'Orbitron', monospace;
-            font-size: 9px; letter-spacing: 2px; cursor: pointer;
-            transition: all 0.3s ease;
-        }
+        .expiry-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: rgba(0,0,0,0.1); padding: 12px; border-radius: 10px; border: 1px solid rgba(0,255,255,0.05); }
+        .expiry-form label { font-size: 8px; font-family: 'Orbitron', monospace; color: #88ddff; letter-spacing: 2px; text-transform: uppercase; }
+        .expiry-form input[type="datetime-local"] { padding: 6px 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,255,255,0.1); border-radius: 8px; color: #fff; font-size: 12px; outline: none; font-family: 'Inter', sans-serif; }
+        .expiry-form .btn-expiry { padding: 6px 18px; background: rgba(0,255,255,0.05); border: 1px solid rgba(0,255,255,0.1); border-radius: 8px; color: #88ddff; font-family: 'Orbitron', monospace; font-size: 9px; letter-spacing: 2px; cursor: pointer; transition: all 0.3s ease; }
         .expiry-form .btn-expiry:hover { border-color: rgba(0,255,255,0.3); color: #00ffff; }
-        .expiry-display {
-            font-size: 9px; color: #88ddff; margin-left: 5px;
-            font-family: 'Orbitron', monospace; letter-spacing: 1px;
-        }
+        .expiry-display { font-size: 9px; color: #88ddff; margin-left: 5px; font-family: 'Orbitron', monospace; letter-spacing: 1px; }
         .expiry-display .hl { color: #00ff66; }
         .expiry-display .warn { color: #ff3355; }
-        .flash {
-            padding: 8px 14px; border-radius: 8px; margin-bottom: 12px;
-            font-size: 10px; font-family: 'Orbitron', monospace;
-            letter-spacing: 1px; display: flex; align-items: center; gap: 8px;
-        }
+        .flash { padding: 8px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 10px; font-family: 'Orbitron', monospace; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
         .flash.success { background: rgba(0,255,102,0.02); border: 1px solid rgba(0,255,102,0.05); color: #00ff66; }
         .flash.error { background: rgba(255,51,85,0.02); border: 1px solid rgba(255,51,85,0.05); color: #ff3355; }
         .empty { text-align: center; color: #88ddff; padding: 16px; font-size: 10px; font-family: 'Orbitron', monospace; letter-spacing: 2px; }
         .footer-text { text-align: center; font-size: 6px; color: #88ddff; letter-spacing: 3px; margin-top: 10px; font-family: 'Orbitron', monospace; }
-        @media (max-width: 600px) {
-            .header .title h1 { font-size: 15px; }
-            .stats { grid-template-columns: repeat(2, 1fr); }
-            .add-form { flex-direction: column; }
-            .add-form input, .add-form select, .add-form .btn-add { width: 100%; }
-            .expiry-form { flex-direction: column; align-items: stretch; }
-            .expiry-form input[type="datetime-local"] { width: 100%; }
-            .card { padding: 12px 14px; }
-        }
     </style>
 </head>
 <body>
@@ -1752,7 +1562,6 @@ ADMIN_DASHBOARD_HTML = '''
             <div class="stat-box"><div class="num" style="color:#FF9933;">{{ stats.expiry_status }}</div><div class="label">expiry</div></div>
         </div>
 
-        <!-- Expiry Management -->
         <div class="card">
             <div class="card-title"><i class="fas fa-clock"></i> system expiry</div>
             <div class="expiry-form">
@@ -1846,9 +1655,6 @@ ADMIN_DASHBOARD_HTML = '''
                 } else {
                     document.getElementById('expiryMsg').innerHTML = '<span style="color:#ff3355;">❌ ' + data.message + '</span>';
                 }
-            })
-            .catch(err => {
-                document.getElementById('expiryMsg').innerHTML = '<span style="color:#ff3355;">❌ error: ' + err.message + '</span>';
             });
         }
     </script>
@@ -1870,69 +1676,22 @@ ADMIN_LOGIN_HTML = '''
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #06060a;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .box {
-            background: rgba(6,6,12,0.95);
-            border: 1px solid rgba(0,255,255,0.1);
-            border-radius: 20px;
-            padding: 36px 32px;
-            max-width: 360px;
-            width: 92%;
-            backdrop-filter: blur(20px);
-            animation: fadeIn 0.6s ease;
-        }
-        @keyframes fadeIn { 0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)} }
+        body { font-family: 'Inter', sans-serif; background: #06060a; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .box { background: rgba(6,6,12,0.95); border: 1px solid rgba(0,255,255,0.1); border-radius: 20px; padding: 36px 32px; max-width: 360px; width: 92%; backdrop-filter: blur(20px); }
         .box .icon { text-align: center; font-size: 30px; color: #00ffff; opacity: 0.5; margin-bottom: 4px; }
         .box h1 { font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 700; color: #fff; text-align: center; letter-spacing: 2px; }
         .box h1 .hl { color: #00ffff; }
         .box .sub { text-align: center; font-size: 8px; font-family: 'Orbitron', monospace; color: #88ddff; letter-spacing: 4px; margin-bottom: 20px; text-transform: uppercase; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 8px; font-family: 'Orbitron', monospace; color: #88ddff; letter-spacing: 2px; margin-bottom: 3px; }
-        .form-group label i { color: #00ffff; }
-        .input-wrap {
-            display: flex; align-items: center;
-            background: rgba(0,0,0,0.2);
-            border: 1px solid rgba(0,255,255,0.05);
-            border-radius: 10px; transition: all 0.3s ease;
-            overflow: hidden;
-        }
-        .input-wrap:focus-within { border-color: rgba(0,255,255,0.15); }
+        .input-wrap { display: flex; align-items: center; background: rgba(0,0,0,0.2); border: 1px solid rgba(0,255,255,0.05); border-radius: 10px; overflow: hidden; }
         .input-wrap .pre { padding: 8px 0 8px 12px; color: #88ddff; font-size: 12px; width: 32px; text-align: center; }
-        .input-wrap input {
-            flex: 1; padding: 8px 12px;
-            background: transparent; border: none;
-            color: #fff; font-size: 14px; outline: none;
-            font-family: 'Inter', sans-serif;
-        }
-        .input-wrap input::placeholder { color: #88ddff; font-size: 12px; }
-        .btn {
-            width: 100%; padding: 10px;
-            background: rgba(0,255,255,0.05);
-            border: 1px solid rgba(0,255,255,0.05);
-            border-radius: 10px;
-            color: #88ddff;
-            font-family: 'Orbitron', monospace;
-            font-size: 11px; letter-spacing: 3px;
-            cursor: pointer; transition: all 0.3s ease;
-            text-transform: uppercase; display: flex;
-            justify-content: center; align-items: center; gap: 8px;
-        }
+        .input-wrap input { flex: 1; padding: 8px 12px; background: transparent; border: none; color: #fff; font-size: 14px; outline: none; font-family: 'Inter', sans-serif; }
+        .btn { width: 100%; padding: 10px; background: rgba(0,255,255,0.05); border: 1px solid rgba(0,255,255,0.05); border-radius: 10px; color: #88ddff; font-family: 'Orbitron', monospace; font-size: 11px; letter-spacing: 3px; cursor: pointer; text-transform: uppercase; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .btn:hover { border-color: rgba(0,255,255,0.2); color: #00ffff; }
-        .error { color: #ff3355; font-size: 10px; font-family: 'Orbitron', monospace; text-align: center; padding: 4px 0; display: none; letter-spacing: 1px; }
-        .error.show { display: block; animation: shake 0.4s ease; }
-        @keyframes shake { 0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)} }
+        .error { color: #ff3355; font-size: 10px; font-family: 'Orbitron', monospace; text-align: center; padding: 4px 0; display: none; }
+        .error.show { display: block; }
         .footer { text-align: center; font-size: 6px; color: #88ddff; letter-spacing: 3px; margin-top: 12px; font-family: 'Orbitron', monospace; }
-        @media (max-width: 480px) {
-            .box { padding: 28px 20px; }
-            .box h1 { font-size: 15px; }
-        }
     </style>
 </head>
 <body>
@@ -1960,17 +1719,6 @@ ADMIN_LOGIN_HTML = '''
         </form>
         <div class="footer">⚡ sakil bhai · premium admin ⚡</div>
     </div>
-    <script>
-        document.querySelector('input[name="username"]').focus();
-        document.querySelectorAll('input').forEach(el => {
-            el.addEventListener('input', function() {
-                document.getElementById('adminError').classList.remove('show');
-            });
-        });
-        {% if error %}
-        document.getElementById('adminError').classList.add('show');
-        {% endif %}
-    </script>
 </body>
 </html>
 '''
@@ -2002,9 +1750,7 @@ def login_page():
 
     remaining_seconds = get_remaining_seconds()
     remaining_minutes = max(0, remaining_seconds // 60)
-    return render_template_string(LOGIN_HTML,
-                                 error="",
-                                 remaining_minutes=remaining_minutes)
+    return render_template_string(LOGIN_HTML, error="", remaining_minutes=remaining_minutes)
 
 @app.route('/logout')
 def logout():
@@ -2015,13 +1761,7 @@ def logout():
 @session_required
 def user_dashboard():
     remaining = get_remaining_seconds()
-    return render_template_string(USER_PANEL_HTML,
-                                 remaining_seconds=remaining,
-                                 max_seconds=3600)
-
-# ============================================
-# ADMIN ROUTES
-# ============================================
+    return render_template_string(USER_PANEL_HTML, remaining_seconds=remaining, max_seconds=3600)
 
 @app.route('/admin', methods=['GET', 'POST'])
 @app.route('/ad', methods=['GET', 'POST'])
@@ -2059,13 +1799,10 @@ def admin_dashboard():
 
     settings = get_settings()
     expiry_utc = settings.get("expiry_utc", "")
-    if expiry_utc:
-        try:
-            dt = datetime.datetime.fromisoformat(expiry_utc.replace('Z', '+00:00'))
-            expiry_local = dt.strftime('%Y-%m-%dT%H:%M')
-        except:
-            expiry_local = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M')
-    else:
+    try:
+        dt = datetime.datetime.fromisoformat(expiry_utc.replace('Z', '+00:00'))
+        expiry_local = dt.strftime('%Y-%m-%dT%H:%M')
+    except:
         expiry_local = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M')
 
     stats = {
@@ -2075,11 +1812,7 @@ def admin_dashboard():
         "expiry_status": expiry_status
     }
 
-    return render_template_string(ADMIN_DASHBOARD_HTML,
-                                 users=users,
-                                 stats=stats,
-                                 remaining=remaining,
-                                 expiry_local=expiry_local)
+    return render_template_string(ADMIN_DASHBOARD_HTML, users=users, stats=stats, remaining=remaining, expiry_local=expiry_local)
 
 @app.route('/admin/set-expiry', methods=['POST'])
 def admin_set_expiry():
@@ -2099,12 +1832,7 @@ def admin_set_expiry():
         if save_settings(settings):
             remaining = get_remaining_seconds()
             status = "active" if remaining > 0 else "expired"
-            return jsonify({
-                "status": "success",
-                "expiry_utc": expiry_utc,
-                "remaining": remaining,
-                "expiry_status": status
-            })
+            return jsonify({"status": "success", "expiry_utc": expiry_utc, "remaining": remaining, "expiry_status": status})
         else:
             return jsonify({"status": "error", "message": "failed to save"}), 500
     except Exception as e:
@@ -2134,11 +1862,8 @@ def admin_add_user():
         "active": True,
         "created": datetime.datetime.utcnow().isoformat()
     }
-    if save_users(users):
-        flash(f"vip user '{username}' created!", "success")
-    else:
-        flash("error creating user!", "error")
-
+    save_users(users)
+    flash(f"vip user '{username}' created!", "success")
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/edit/<username>', methods=['GET', 'POST'])
@@ -2162,103 +1887,65 @@ def admin_edit_user(username):
         users[username]["role"] = new_role
         if new_password:
             users[username]["password"] = hashlib.sha256(new_password.encode()).hexdigest()
-            flash("password updated!", "success")
 
-        if save_users(users):
-            flash("user updated!", "success")
-        else:
-            flash("error saving!", "error")
-
+        save_users(users)
+        flash("user updated!", "success")
         return redirect(url_for('admin_dashboard'))
 
     return f'''
     <!DOCTYPE html>
     <html><head><title>edit user</title>
     <style>
-        *{{margin:0;padding:0;box-sizing:border-box;}}
-        body{{background:#06060a;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Inter',sans-serif;}}
+        body{{background:#06060a;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Inter',sans-serif;color:#fff;}}
         .box{{background:rgba(6,6,12,0.95);border:1px solid rgba(0,255,255,0.1);border-radius:20px;padding:30px;max-width:380px;width:92%;}}
-        h1{{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#fff;letter-spacing:2px;text-align:center;}}
-        h1 .hl{{color:#00ffff;}}
-        .sub{{text-align:center;font-size:8px;font-family:'Orbitron',monospace;color:#88ddff;letter-spacing:3px;margin-bottom:16px;}}
-        .form-group{{margin-bottom:12px;}}
+        h1{{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;letter-spacing:2px;text-align:center;color:#00ffff;}}
+        .form-group{{margin-bottom:12px;margin-top:10px;}}
         label{{display:block;font-size:8px;font-family:'Orbitron',monospace;color:#88ddff;letter-spacing:2px;margin-bottom:3px;}}
-        input,select{{width:100%;padding:8px 12px;background:rgba(0,0,0,0.2);border:1px solid rgba(0,255,255,0.05);border-radius:8px;color:#fff;font-size:13px;outline:none;font-family:'Inter',sans-serif;margin-top:2px;}}
-        input:focus,select:focus{{border-color:rgba(0,255,255,0.15);}}
+        input,select{{width:100%;padding:8px 12px;background:rgba(0,0,0,0.2);border:1px solid rgba(0,255,255,0.05);border-radius:8px;color:#fff;font-size:13px;outline:none;}}
         select option{{background:#0a0a1a;color:#fff;}}
-        .btn{{width:100%;padding:10px;background:rgba(0,255,255,0.05);border:1px solid rgba(0,255,255,0.05);border-radius:8px;color:#88ddff;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all 0.3s ease;margin-top:4px;}}
-        .btn:hover{{border-color:rgba(0,255,255,0.2);color:#00ffff;}}
-        .back{{display:block;text-align:center;font-size:8px;font-family:'Orbitron',monospace;color:#88ddff;text-decoration:none;margin-top:10px;letter-spacing:2px;transition:all 0.3s ease;}}
-        .back:hover{{color:#00ffff;}}
-    </style>
-    </head>
+        .btn{{width:100%;padding:10px;background:rgba(0,255,255,0.05);border:1px solid rgba(0,255,255,0.05);border-radius:8px;color:#88ddff;font-family:'Orbitron',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;margin-top:8px;}}
+        .back{{display:block;text-align:center;font-size:8px;font-family:'Orbitron',monospace;color:#88ddff;text-decoration:none;margin-top:10px;}}
+    </style></head>
     <body>
     <div class="box">
-        <h1><span class="hl">edit</span> user</h1>
-        <div class="sub">premium · {username}</div>
+        <h1>EDIT USER</h1>
         <form method="POST">
-            <div class="form-group">
-                <label><i class="fas fa-key"></i> new password (optional)</label>
-                <input type="password" name="password" placeholder="leave blank to keep">
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-user-tag"></i> role</label>
-                <select name="role">
-                    <option value="user" {"selected" if users[username].get("role")=="user" else ""}>user</option>
-                    <option value="admin" {"selected" if users[username].get("role")=="admin" else ""}>admin</option>
-                </select>
-            </div>
-            <button type="submit" class="btn"><i class="fas fa-save"></i> update</button>
+            <div class="form-group"><label>new password</label><input type="password" name="password"></div>
+            <div class="form-group"><label>role</label><select name="role"><option value="user">user</option><option value="admin">admin</option></select></div>
+            <button type="submit" class="btn">UPDATE</button>
         </form>
-        <a href="{url_for('admin_dashboard')}" class="back"><i class="fas fa-arrow-left"></i> back</a>
-    </div>
-    </body>
-    </html>
+        <a href="{url_for('admin_dashboard')}" class="back">← back</a>
+    </div></body></html>
     '''
 
 @app.route('/admin/toggle/<username>')
 def admin_toggle_user(username):
     if not session.get("admin_auth"):
         return redirect(url_for('admin_login'))
-
     if username == "sakil2026":
         flash("cannot toggle default admin!", "error")
         return redirect(url_for('admin_dashboard'))
 
     users = get_users()
-    if username not in users:
-        flash("user not found!", "error")
-        return redirect(url_for('admin_dashboard'))
-
-    users[username]["active"] = not users[username].get("active", True)
-    if save_users(users):
-        status = "enabled" if users[username]["active"] else "disabled"
-        flash(f"user {status}!", "success")
-    else:
-        flash("error toggling!", "error")
-
+    if username in users:
+        users[username]["active"] = not users[username].get("active", True)
+        save_users(users)
+        flash("user status toggled!", "success")
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/delete/<username>')
 def admin_delete_user(username):
     if not session.get("admin_auth"):
         return redirect(url_for('admin_login'))
-
     if username == "sakil2026":
         flash("cannot delete default admin!", "error")
         return redirect(url_for('admin_dashboard'))
 
     users = get_users()
-    if username not in users:
-        flash("user not found!", "error")
-        return redirect(url_for('admin_dashboard'))
-
-    del users[username]
-    if save_users(users):
-        flash(f"user '{username}' deleted!", "success")
-    else:
-        flash("error deleting!", "error")
-
+    if username in users:
+        del users[username]
+        save_users(users)
+        flash("user deleted!", "success")
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/logout')
@@ -2267,7 +1954,7 @@ def admin_logout():
     return redirect(url_for('admin_login'))
 
 # ============================================
-# API ROUTES
+# API ROUTES (FIXED LOOKUP)
 # ============================================
 
 @app.route('/api/lookup', methods=['POST'])
@@ -2280,11 +1967,20 @@ def lookup():
             return jsonify({"status": "error", "message": "Phone number required"})
 
         clean_number = re.sub(r'[\+\s\-]', '', number)
-        params = {'key': 'zeeshan', 'type': 'number', 'num': clean_number}
+        
+        # সঠিকভাবে URL ফরম্যাট করে রিকোয়েস্ট পাঠানো
+        target_url = f"https://whocaresthisshit.vercel.app/key=zeeshan/number={clean_number}"
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
 
-        response = requests.get('https://whocaresthisshit.vercel.app', params=params, timeout=30)
-        response.raise_for_status()
-        api_data = response.json()
+        response = requests.get(target_url, headers=headers, timeout=30)
+        
+        try:
+            api_data = response.json()
+        except:
+            return jsonify({"status": "error", "message": f"Invalid JSON from API. Status: {response.status_code}"})
 
         if api_data.get('status') == 'error':
             return jsonify(api_data)
@@ -2294,7 +1990,6 @@ def lookup():
             info = result[0]
             address = info.get('address', info.get('location', ''))
             
-            # লোকেশন লাইভ কিনা চেক করি - ল্যাট/লং থাকলে লাইভ
             if 'lat' not in info and 'lng' not in info and address and address != 'N/A':
                 try:
                     geocode_url = f"https://maps.googleapis.com/maps/api/geocode/json?address={urllib.parse.quote(address)}&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"
@@ -2335,7 +2030,6 @@ def api_expiry_status():
 # ============================================
 
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get('PORT', 5000))
     print("="*60)
     print("⚡ SAKIL BHAI - USER PANEL v8.0")
@@ -2347,7 +2041,6 @@ if __name__ == '__main__':
     print(f"✅ Admin:       http://0.0.0.0:{port}/admin")
     print("="*60)
     print("🔑 Default: sakil2026 / sakil2026")
-    print("📁 Firebase: sakil-paid-hack-sell-1342007")
     print("="*60)
 
     app.run(host='0.0.0.0', port=port, debug=False, threaded=True)
